@@ -1,0 +1,87 @@
+#include "get_next_line.h"
+
+
+static	int	__get_nl_idx(char *s)
+{
+	int i;
+	
+	i = 0;
+	while (i < BUFFER_SIZE)
+	{
+		if (s[i] == '\n')
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
+char	*get_next_line(int fd)
+{
+	char	*buf;
+	char	*line = NULL;
+	static char	*backup;
+	
+	// if (*backup == '\0')
+	// 	return (NULL);
+	if (backup == NULL)
+	{
+		printf("|| Backup is null\n");
+		backup = (char *)malloc(1);
+		if (!backup)
+			return (NULL); // and free
+		*backup = '\0';
+		printf("backup init: %zu\n\n", ft_strlen(backup));
+	}
+
+	buf = (char *)malloc(BUFFER_SIZE + 1);
+	if (!buf)
+	{
+		// 동적할당해준거 전부 free 해야함
+		return (NULL);
+	}
+	*(buf + BUFFER_SIZE - 1) = '\0';
+
+
+	int rcnt;
+	rcnt = read(fd, buf, BUFFER_SIZE);
+
+	printf("backuplen: %zu	rcnt: %d\n\n", ft_strlen(backup), rcnt);
+
+	if (rcnt == 0 && ft_strlen(backup) == 0) //end!!
+	{
+		printf("end\n\n");
+		return (NULL);
+	}
+	// 잘 읽어왔다고 가정
+
+	int nl = __get_nl_idx(buf);
+	if (nl == -1)
+	{
+		// 개행이없다. 전부다 백업뒤에 붙이고
+		backup = ft_strjoin(backup, buf);
+		// 또 읽어? 아니면 백업에서 잘라서 프린트해?
+		int b_nl = __get_nl_idx(backup);
+		if (b_nl == -1)
+		{
+			line = ft_substr(backup, 0, ft_strlen(backup));
+			*backup = '\0';
+		}
+		else
+		{
+			line = ft_substr(backup, 0, b_nl);
+			backup = ft_substr(backup, b_nl + 1, ft_strlen(backup) - (b_nl + 1));
+		}
+	}
+	else
+	{
+		// 개행이 있다.
+		line = ft_substr(buf, 0, nl);
+		backup = ft_strjoin(backup, buf + nl + 1); // 합칠 수 있겠다
+	}
+
+	printf("line: %s\n", line);
+	printf("backup: %s\n", backup);
+	printf("----------\n");
+
+	return (line);
+}
