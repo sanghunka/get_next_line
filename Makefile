@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: sankang <sankang@student.42.fr>            +#+  +:+       +#+         #
+#    By: sanghunka <sanghunka@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/05 14:03:30 by sankang           #+#    #+#              #
-#    Updated: 2021/12/12 23:52:33 by sankang          ###   ########.fr        #
+#    Updated: 2021/12/25 19:48:22 by sanghunka        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,11 +35,17 @@ fclean: clean
 
 re: fclean all
 
+a:
+	@gcc -D BUFFER_SIZE=10 get_next_line.c get_next_line_utils.c main.c
+
+g:
+	@gcc -D BUFFER_SIZE=10 -Wall -Wextra -Werror -g3 -fsanitize=address get_next_line.c get_next_line_utils.c main.c
+
 run:
-	@gcc -D BUFFER_SIZE=10 -Wall -Wextra -Werror get_next_line.c get_next_line_utils.c main.c
+	@gcc -D BUFFER_SIZE=10 get_next_line.c get_next_line_utils.c main.c
+	@#gcc -D BUFFER_SIZE=10 -Wall -Wextra -Werror get_next_line.c get_next_line_utils.c main.c
 	@./a.out
 
-# run: fclean all
-# 	@./main
-# 	@make fclean
-# @gcc -D BUFFER_SIZE=10 -Wall -Wextra -Werror -g3 -fsanitize=address get_next_line.c get_next_line_utils.c main.c
+rung:
+	@gcc -D BUFFER_SIZE=10 -Wall -Wextra -Werror -g3 -fsanitize=address get_next_line.c get_next_line_utils.c main.c
+	@./a.out

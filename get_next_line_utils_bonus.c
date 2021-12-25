@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sanghunka <sanghunka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/12/25 21:53:03 by sanghunka         #+#    #+#             */
-/*   Updated: 2021/12/25 21:53:04 by sanghunka        ###   ########.fr       */
+/*   Created: 2021/12/25 21:52:43 by sanghunka         #+#    #+#             */
+/*   Updated: 2021/12/25 21:52:44 by sanghunka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 size_t	ft_strlen(const char *s)
 {

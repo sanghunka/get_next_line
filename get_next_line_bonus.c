@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sanghunka <sanghunka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/25 21:06:18 by sanghunka         #+#    #+#             */
-/*   Updated: 2021/12/25 22:30:58 by sanghunka        ###   ########.fr       */
+/*   Updated: 2021/12/25 22:30:24 by sanghunka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 static	int	__get_nl_idx(char *s)
 {
@@ -69,7 +69,7 @@ static int	__join(char **backup, char *buf)
 
 char	*get_next_line(int fd)
 {
-	static char	*b;
+	static char	*b[10240];
 	char		*l;
 	char		buf[BUFFER_SIZE + 1];
 	int			nl_idx;
@@ -77,16 +77,16 @@ char	*get_next_line(int fd)
 
 	l = NULL;
 	read_cnt = read(fd, buf, BUFFER_SIZE);
-	if (read_cnt < 1 && (b == NULL || ft_strlen(b) == 0))
-		return (__free(&b));
+	if (read_cnt < 1 && (b[fd] == NULL || ft_strlen(b[fd]) == 0))
+		return (__free(&(b[fd])));
 	buf[read_cnt] = 0;
-	nl_idx = __join(&b, buf);
+	nl_idx = __join(&(b[fd]), buf);
 	if (nl_idx >= 0)
-		l = __split(&b, &l, nl_idx + 1, ft_strlen(b) - (nl_idx + 1));
+		l = __split(&(b[fd]), &l, nl_idx + 1, ft_strlen(b[fd]) - (nl_idx + 1));
 	else if (nl_idx == -1)
 	{
 		if (read_cnt == 0)
-			l = __split(&b, &l, ft_strlen(b), ft_strlen(b));
+			l = __split(&(b[fd]), &l, ft_strlen(b[fd]), ft_strlen(b[fd]));
 		while (!l)
 			l = get_next_line(fd);
 	}
