@@ -6,7 +6,7 @@
 /*   By: sanghunka <sanghunka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/25 21:06:18 by sanghunka         #+#    #+#             */
-/*   Updated: 2022/01/07 05:58:55 by sanghunka        ###   ########.fr       */
+/*   Updated: 2022/01/07 04:10:23 by sanghunka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,20 +27,12 @@ static	int	__get_nl_idx(char *s)
 	return (-1);
 }
 
-// static char	*__free(char **backup, char **buf)
-// {
-// 	if (*backup)
-// 		free(*backup);
-// 	free(*buf);
-// 	return (NULL);
-// }
-
-static char	*__free(char **backup, char **buf, int is_freeable_buf)
+static char	*__free(char **backup, char **buf)
 {
 	if (*backup)
 		free(*backup);
-	if (is_freeable_buf)
-		free(*buf);
+	if (*buf)
+		free(*buf);		
 	return (NULL);
 }
 
@@ -62,9 +54,9 @@ static char	*__split(char **backup, int nl_idx)
 		*backup = ft_substr(*backup, nl_idx + 1, len - (nl_idx + 1));
 	}
 	if (!line)
-		return (__free(backup, backup, 0));
+		return (NULL);
 	if (!*backup)
-		return (__free(&line, &line, 0));
+		return (NULL);
 	free(temp);		
 	return (line);
 }
@@ -96,13 +88,14 @@ char	*get_next_line(int fd)
 	int			nl_idx;
 
 	if (fd < 0)
-		return (__free(&b, &buf, 0));
+		return (NULL);
 	buf = (char *)malloc(BUFFER_SIZE + 1);
 	if (buf == NULL)
-		return (__free(&b, &buf, 0));
+		return (NULL);		
 	read_cnt = read(fd, buf, BUFFER_SIZE);
-	if (read_cnt < 0 || (read_cnt == 0 && (b == NULL || ft_strlen(b) == 0)))
-		return (__free(&b, &buf, 1));
+	// if (read_cnt < 0)
+	if (read_cnt < 1 && (b == NULL || ft_strlen(b) == 0))
+		return (__free(&b, &buf));
 	nl_idx = __join(&b, buf, read_cnt);
 	while (nl_idx == -1)
 	{
@@ -112,7 +105,7 @@ char	*get_next_line(int fd)
 		nl_idx = __join(&b, buf, read_cnt);
 	}
 	if (nl_idx == -2)
-		return (__free(&b, &buf, 1));
+		return (__free(&b, &buf));
 	free(buf);
 	return (__split(&b, nl_idx));
 }
