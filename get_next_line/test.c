@@ -6,7 +6,7 @@
 /*   By: sanghunka <sanghunka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/25 21:06:18 by sanghunka         #+#    #+#             */
-/*   Updated: 2022/01/07 04:01:33 by sanghunka        ###   ########.fr       */
+/*   Updated: 2022/01/07 04:21:04 by sanghunka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,20 +40,21 @@ int	main(void)
 
 	// buf = (char *)malloc(BUFFER_SIZE + 1);
 	
+	if (b == NULL)
+		printf("b is null\n");
+	else
+		printf("b is not null\n");
+
 	if (buf == NULL)
 		printf("buf is null\n");
 	else
-		printf("buf is not null\n");
+		printf("buf is not null\n");		
 	
 	// printf("%p\n", buf);
 	// printf("%c\n", *buf);
 
-	ft_strlen(b);
+	// ft_strlen(b);
 
-	// if (*buf)
-	// 	printf("*buf is null\n");
-	// else
-	// 	printf("*buf is not null\n");
 	
 
 	return (0);

@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_bak.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sanghunka <sanghunka@student.42.fr>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/25 21:06:18 by sanghunka         #+#    #+#             */
+/*   Updated: 2022/01/07 05:46:31 by sanghunka        ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
 static	int	__get_nl_idx(char *s)
 {
-	int	i;
+	int			i;
 	const int	s_len = ft_strlen(s);
 
 	i = 0;
@@ -15,33 +27,51 @@ static	int	__get_nl_idx(char *s)
 	return (-1);
 }
 
-static char	*__free(char **backup)
+// static char	*__free(char **backup, char **buf)
+// {
+// 	if (*backup)
+// 		free(*backup);
+// 	free(*buf);
+// 	return (NULL);
+// }
+
+static char	*__free(char **backup, char **buf, int is_freeable_buf)
 {
 	if (*backup)
 		free(*backup);
+	if (is_freeable_buf)
+		free(*buf);
 	return (NULL);
 }
 
-// static int	__split_backup(char **backup, char **line, int start, int end)
-// {
-// 	char *temp;
-
-// 	*line = ft_substr(*backup, 0, start);
-// 	if (*line)
-// 		return (0);
-// 	temp = *backup;
-// 	*backup = ft_substr(*backup, start, end);
-// 	// free(temp);
-// 	if (*backup)
-// 		return (0);	
-// 	free(temp);
-// 	return (1);
-// }
-
-// 초기화와 백업에 nl이 어디있는지 알려주는
-static int	__backup(char **backup, char *buf)
+static char	*__split(char **backup, int nl_idx)
 {
-	char *temp;
+	char	*line;
+	char	*temp;
+	const int	len = ft_strlen(*backup);
+
+	temp = *backup;
+	if (nl_idx == -1)
+	{
+		line = ft_substr(*backup, 0, len);
+		*backup = ft_substr("", 0, 0);			
+	}
+	else
+	{
+		line = ft_substr(*backup, 0, nl_idx + 1);
+		*backup = ft_substr(*backup, nl_idx + 1, len - (nl_idx + 1));
+	}
+	if (!line)
+		return (NULL);
+	if (!*backup)
+		return (NULL);
+	free(temp);		
+	return (line);
+}
+
+static int	__join(char **backup, char *buf, int read_cnt)
+{
+	char	*temp;
 
 	if (*backup == NULL)
 	{
@@ -50,70 +80,63 @@ static int	__backup(char **backup, char *buf)
 			return (-2);
 	}
 	temp = *backup;
+	*(buf + read_cnt) = '\0';
 	*backup = ft_strjoin(*backup, buf);
 	free(temp);
+	if (!*backup)
+		return (-2);
 	return (__get_nl_idx(*backup));
 }
 
 char	*get_next_line(int fd)
 {
-	char	buf[BUFFER_SIZE + 1];
-	char	*line;
-	char	*temp;
-	static char	*backup;
-	int nl_idx;
-	int rcnt;
+	static char	*b;
+	char		*buf;
+	int			read_cnt;
+	int			nl_idx;
 
-	line = NULL;
-	rcnt = read(fd, buf, BUFFER_SIZE);
-	if (rcnt == -1)
+	if (fd < 0)
+		return (__free(&b, &buf, 0));//return (NULL);
+	buf = (char *)malloc(BUFFER_SIZE + 1);
+	if (buf == NULL)
+		return (__free(&b, &buf, 0));//return (NULL);
+	read_cnt = read(fd, buf, BUFFER_SIZE);
+	if (read_cnt < 0 || (read_cnt == 0 && (b == NULL || ft_strlen(b) == 0)))
+		return (__free(&b, &buf, 1));
+	nl_idx = __join(&b, buf, read_cnt);
+	while (nl_idx == -1)
 	{
-		//__free()   // 읽기실패했으니 free 해줘야 해
-		return (__free(&backup));
+		if (read_cnt == 0)
+			break;
+		read_cnt = read(fd, buf, BUFFER_SIZE);
+		nl_idx = __join(&b, buf, read_cnt);
 	}
-	buf[rcnt] = 0;
-	// if rcnt == 0 ? 아무것도 읽어들인게 없고 && 백업도 null || backup길이가0이라면
-	if (rcnt == 0 && (backup == NULL || ft_strlen(backup) == 0))
-	{
-		// 더이상 할게없다. 진정한 종료.
-		return (__free(&backup));
-	}
-
-	// 뭔가 읽어왔다면 // 일단 갖다붙혀
-	nl_idx = __backup(&backup, buf);
-
-	// printf("자르기전 buf: %s\n", buf);
-	// printf("rcnt: %d\n", rcnt);
-	// printf("자르기전 backup: %s\n", backup);
-	// printf("자르기전 backup len: %zu\n", ft_strlen(backup));
-	// printf("nl_idx: %d\n", nl_idx);
-	
-	// backup 할당에 실패했단 뜻
 	if (nl_idx == -2)
-		return (NULL);
-	else if (nl_idx == -1)
-	{
-		// \n이 없다. backup그대로 출력하면 끝???이 아니야. 끝까지 읽어들였는지 확인을 해야 해.
-		// rcnt == 0. 다 읽어 들였다는거.
-		// nl_idx == -1. 줄바꿈도 없다는거.
-		if (rcnt == 0)
-		{
-			line = ft_substr(backup, 0, ft_strlen(backup));
-			temp = backup;
-			backup = NULL;
-			free(temp);
-			// __split_backup(&backup, &line, ft_strlen(backup), ft_strlen(backup));
-		}
-		while (!line)
-			line = get_next_line(fd);
-	}
-	else
-	{
-		line = ft_substr(backup, 0, nl_idx + 1);
-		temp = backup;
-		backup = ft_substr(backup, nl_idx + 1, ft_strlen(backup) - (nl_idx + 1));
-		free(temp);
-		// __split_backup(&backup, &line, nl_idx + 1, ft_strlen(backup) - (nl_idx + 1));
-	}
-	return (line);
+		return (__free(&b, &buf, 1));
+	free(buf);
+	return (__split(&b, nl_idx));
 }
+
+// char	*get_next_line(int fd)
+// {
+// 	static char	*b;
+// 	char		*buf;
+// 	int			read_cnt;
+
+// 	buf = (char *)malloc(BUFFER_SIZE + 1);
+// 	if (fd < 0 || buf == NULL)
+// 		return (__free(&b, &buf));
+// 	read_cnt = read(fd, buf, BUFFER_SIZE);
+// 	if (read_cnt < 1 && (b == NULL || ft_strlen(b) == 0))
+// 		return (__free(&b, &buf));
+// 	*(buf + read_cnt) = '\0';
+// 	while (__join(&b, buf) == -1)
+// 	{
+// 		if (read_cnt == 0)
+// 			break;
+// 		read_cnt = read(fd, buf, BUFFER_SIZE);
+// 		*(buf + read_cnt) = '\0';
+// 	}
+// 	free(buf);
+// 	return (__split(&b));
+// }
