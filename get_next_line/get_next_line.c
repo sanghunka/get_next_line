@@ -6,7 +6,7 @@
 /*   By: sanghunka <sanghunka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/25 21:06:18 by sanghunka         #+#    #+#             */
-/*   Updated: 2022/02/13 00:57:33 by sanghunka        ###   ########.fr       */
+/*   Updated: 2022/02/13 12:02:07 by sanghunka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,6 @@ char	*get_next_line(int fd)
 	if (buf == NULL)
 		return (NULL);
 	read_cnt = read(fd, buf, BUFFER_SIZE);
-	// if (read_cnt < 1 && (b == NULL || ft_strlen(b) == 0))
 	if (read_cnt < 0 || (read_cnt == 0 && (b == NULL || ft_strlen(b) == 0)))
 		return (__free(&b, &buf));
 	nl_idx = __join(&b, buf, read_cnt);
