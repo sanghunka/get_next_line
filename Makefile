@@ -6,7 +6,7 @@
 #    By: sanghunka <sanghunka@student.42.fr>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/12/19 11:16:18 by jaesjeon          #+#    #+#              #
-#    Updated: 2022/01/07 02:20:31 by sanghunka        ###   ########.fr        #
+#    Updated: 2022/02/13 00:57:36 by sanghunka        ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ RM = rm -rf
 USERBUF = 1
 DEF = -D BUFFER_SIZE=$(USERBUF)
 DEBUG = -g
-LEAKS = -fsanitize=address
+LEAKS = -fsanitize=address -g3
 SRCDIR = ./get_next_line
 OBJDIR = ./get_next_line
 _SRCS_M = get_next_line.c \

@@ -6,7 +6,7 @@
 /*   By: sanghunka <sanghunka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/25 21:06:18 by sanghunka         #+#    #+#             */
-/*   Updated: 2022/01/07 04:10:23 by sanghunka        ###   ########.fr       */
+/*   Updated: 2022/02/13 00:57:33 by sanghunka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,32 +32,28 @@ static char	*__free(char **backup, char **buf)
 	if (*backup)
 		free(*backup);
 	if (*buf)
-		free(*buf);		
+		free(*buf);
 	return (NULL);
 }
 
 static char	*__split(char **backup, int nl_idx)
 {
-	char	*line;
-	char	*temp;
+	char		*line;
+	char		*temp;
 	const int	len = ft_strlen(*backup);
 
 	temp = *backup;
 	if (nl_idx == -1)
 	{
 		line = ft_substr(*backup, 0, len);
-		*backup = ft_substr("", 0, 0);			
+		*backup = ft_substr("", 0, 0);
 	}
 	else
 	{
 		line = ft_substr(*backup, 0, nl_idx + 1);
 		*backup = ft_substr(*backup, nl_idx + 1, len - (nl_idx + 1));
 	}
-	if (!line)
-		return (NULL);
-	if (!*backup)
-		return (NULL);
-	free(temp);		
+	free(temp);
 	return (line);
 }
 
@@ -91,16 +87,16 @@ char	*get_next_line(int fd)
 		return (NULL);
 	buf = (char *)malloc(BUFFER_SIZE + 1);
 	if (buf == NULL)
-		return (NULL);		
+		return (NULL);
 	read_cnt = read(fd, buf, BUFFER_SIZE);
-	// if (read_cnt < 0)
-	if (read_cnt < 1 && (b == NULL || ft_strlen(b) == 0))
+	// if (read_cnt < 1 && (b == NULL || ft_strlen(b) == 0))
+	if (read_cnt < 0 || (read_cnt == 0 && (b == NULL || ft_strlen(b) == 0)))
 		return (__free(&b, &buf));
 	nl_idx = __join(&b, buf, read_cnt);
 	while (nl_idx == -1)
 	{
 		if (read_cnt == 0)
-			break;
+			break ;
 		read_cnt = read(fd, buf, BUFFER_SIZE);
 		nl_idx = __join(&b, buf, read_cnt);
 	}
@@ -109,27 +105,3 @@ char	*get_next_line(int fd)
 	free(buf);
 	return (__split(&b, nl_idx));
 }
-
-// char	*get_next_line(int fd)
-// {
-// 	static char	*b;
-// 	char		*buf;
-// 	int			read_cnt;
-
-// 	buf = (char *)malloc(BUFFER_SIZE + 1);
-// 	if (fd < 0 || buf == NULL)
-// 		return (__free(&b, &buf));
-// 	read_cnt = read(fd, buf, BUFFER_SIZE);
-// 	if (read_cnt < 1 && (b == NULL || ft_strlen(b) == 0))
-// 		return (__free(&b, &buf));
-// 	*(buf + read_cnt) = '\0';
-// 	while (__join(&b, buf) == -1)
-// 	{
-// 		if (read_cnt == 0)
-// 			break;
-// 		read_cnt = read(fd, buf, BUFFER_SIZE);
-// 		*(buf + read_cnt) = '\0';
-// 	}
-// 	free(buf);
-// 	return (__split(&b));
-// }
