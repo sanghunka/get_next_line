@@ -6,7 +6,7 @@
 /*   By: sanghunka <sanghunka@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/25 21:06:18 by sanghunka         #+#    #+#             */
-/*   Updated: 2022/02/13 12:02:19 by sanghunka        ###   ########.fr       */
+/*   Updated: 2022/02/17 22:32:07 by sanghunka        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ char	*get_next_line(int fd)
 	nl_idx = __join(&(b[fd]), buf, read_cnt);
 	while (nl_idx == -1)
 	{
-		if (read_cnt == 0)
+		if (read_cnt < BUFFER_SIZE)
 			break ;
 		read_cnt = read(fd, buf, BUFFER_SIZE);
 		nl_idx = __join(&(b[fd]), buf, read_cnt);
